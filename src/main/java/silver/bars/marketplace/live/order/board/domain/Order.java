@@ -40,8 +40,15 @@ public final class Order {
         return quantityPurchased.toBigDecimal();
     }
 
-    public Integer getPricePerKg() {
+    public WeightValue getQuantityPurchased() {
+        return quantityPurchased;
+    }
+    public Integer getPriceAmount() {
         return pricePerKg.getAmount();
+    }
+
+    public PricePerKg getPricePerKg() {
+        return pricePerKg;
     }
 
     public Type getType() {

@@ -36,9 +36,9 @@ public class PricePerKgTest {
     }
 
     @Test
-    public void inGBPReturnsInstanceKilogramsAsTheUnitName() {
+    public void inGBPReturnsInstanceWithPoundSterlingAsCurrencySymbol() {
         PricePerKg pricePerKg = PricePerKg.inGBP(1);
 
-        assertThat(pricePerKg.getCurrencyCode()).isEqualTo("GBP");
+        assertThat(pricePerKg.getCurrencySymbol()).isEqualTo("£");
     }
 }

@@ -15,5 +15,7 @@ public interface OrderRepository {
 
     List<Order> findAll();
 
+    List<Order> findByType(Order.Type orderType);
+
     void cancel(UUID orderId);
 }

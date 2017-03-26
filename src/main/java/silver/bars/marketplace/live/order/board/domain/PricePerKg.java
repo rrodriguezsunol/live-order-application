@@ -28,8 +28,8 @@ public final class PricePerKg {
         return amount;
     }
 
-    public String getCurrencyCode() {
-        return currency.getCurrencyCode();
+    public String getCurrencySymbol() {
+        return currency.getSymbol();
     }
 
     @Override

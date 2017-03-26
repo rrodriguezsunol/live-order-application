@@ -13,6 +13,9 @@ public final class WeightValue {
     private WeightValue(String unitName, BigDecimal value) {
         Objects.requireNonNull(unitName, "unitName cannot be null");
         Objects.requireNonNull(value, "value cannot be null");
+
+        value = value.setScale(2, BigDecimal.ROUND_UP).setScale(1, BigDecimal.ROUND_HALF_DOWN);
+
         if (value.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("value cannot be equal to or less than 0");
         }
@@ -31,6 +34,13 @@ public final class WeightValue {
 
     public BigDecimal toBigDecimal() {
         return value;
+    }
+
+    public WeightValue add(WeightValue other) {
+        Objects.requireNonNull(other, "other cannot be null");
+
+        BigDecimal sum = this.value.add(other.value);
+        return new WeightValue(this.unitName, sum);
     }
 
     @Override

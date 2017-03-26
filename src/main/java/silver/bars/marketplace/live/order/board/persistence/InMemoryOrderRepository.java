@@ -10,12 +10,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Created by raimon on 26/03/2017.
  */
 final class InMemoryOrderRepository implements OrderRepository {
-    Map<UUID, Order> savedOrders = new HashMap<>();
+    private Map<UUID, Order> savedOrders = new HashMap<>();
 
     @Override
     public Order save(NewOrder newOrder) {
@@ -35,6 +36,15 @@ final class InMemoryOrderRepository implements OrderRepository {
     @Override
     public List<Order> findAll() {
         return new ArrayList<>(savedOrders.values());
+    }
+
+    @Override
+    public List<Order> findByType(Order.Type orderType) {
+        Objects.requireNonNull(orderType, "orderType cannot be null");
+
+        return savedOrders.values().stream()
+                .filter(order -> order.getType() == orderType)
+                .collect(Collectors.toList());
     }
 
     @Override

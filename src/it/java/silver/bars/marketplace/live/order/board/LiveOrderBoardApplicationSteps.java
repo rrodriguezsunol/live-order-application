@@ -1,10 +1,12 @@
 package silver.bars.marketplace.live.order.board;
 
+import cucumber.api.DataTable;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import cucumber.api.java8.En;
 import silver.bars.marketplace.live.order.board.domain.NewOrder;
 import silver.bars.marketplace.live.order.board.domain.Order;
+import silver.bars.marketplace.live.order.board.domain.SummaryOrder;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -18,6 +20,7 @@ public class LiveOrderBoardApplicationSteps implements En {
     private LiveOrderBoardApplication liveOrderBoardApplication;
 
     private Order registeredOrder;
+    private List<SummaryOrder> summaryOfOrders;
 
     @Before
     public void startApplication() {
@@ -36,8 +39,8 @@ public class LiveOrderBoardApplicationSteps implements En {
             assertThat(orders).isEmpty();
         });
 
-        When("^I register a (.*?) order of (.*?)Kg for £(\\d+)$", (String orderType, String quantityInKg, Integer pricePerKg) -> {
-            NewOrder newOrder = new NewOrder("1",
+        When("^'(.*?)' registers a '(.*?)' order of (.*?)Kg for £(\\d+)$", (String userId, String orderType, String quantityInKg, Integer pricePerKg) -> {
+            NewOrder newOrder = new NewOrder(userId,
                     new BigDecimal(quantityInKg),
                     pricePerKg,
                     Order.Type.valueOf(orderType.toUpperCase()));
@@ -58,6 +61,23 @@ public class LiveOrderBoardApplicationSteps implements En {
             List<Order> orders = liveOrderBoardApplication.listAll();
 
             assertThat(orders).isEmpty();
+        });
+
+        When("^I ask for the summary of the '(.*?)' orders$", (String orderType) -> {
+            summaryOfOrders = liveOrderBoardApplication.listSummary(Order.Type.valueOf(orderType.toUpperCase()));
+        });
+
+        Then("^the live order board looks as follows:$", (DataTable orderSummaryDataTable) -> {
+            List<String> flattenedExpectedOrderSummaryTable = orderSummaryDataTable.asList(String.class);
+
+            assertThat(summaryOfOrders.size()).isEqualTo(flattenedExpectedOrderSummaryTable.size());
+
+            SummaryOrder firstSummaryOrder = summaryOfOrders.get(0);
+            assertThat(firstSummaryOrder.getQuantityPurchasedAsString() + " " + firstSummaryOrder.getPricePerKgAsString())
+                    .isEqualTo(flattenedExpectedOrderSummaryTable.get(0));
+            SummaryOrder secondSummaryOrder = summaryOfOrders.get(1);
+            assertThat(secondSummaryOrder.getQuantityPurchasedAsString() + " " + secondSummaryOrder.getPricePerKgAsString())
+                    .isEqualTo(flattenedExpectedOrderSummaryTable.get(1));
         });
     }
 }

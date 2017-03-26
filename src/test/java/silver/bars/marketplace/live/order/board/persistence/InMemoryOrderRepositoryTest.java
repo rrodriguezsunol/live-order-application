@@ -37,7 +37,7 @@ public class InMemoryOrderRepositoryTest {
         assertThat(actualOrder.getId()).isNotNull();
         assertThat(actualOrder.getUserId()).isEqualTo(newOrder.getUserId());
         assertThat(actualOrder.getQuantity()).isEqualTo(newOrder.getQuantity());
-        assertThat(actualOrder.getPricePerKg()).isEqualTo(newOrder.getPricePerKg());
+        assertThat(actualOrder.getPriceAmount()).isEqualTo(newOrder.getPricePerKg());
         assertThat(actualOrder.getType()).isEqualTo(newOrder.getType());
     }
 
@@ -59,7 +59,7 @@ public class InMemoryOrderRepositoryTest {
     }
 
     @Test
-    public void cancelThrowsExceptionWhenNoOrderWithSpecifiedIdExists() {
+    public void cancelThrowsExceptionWhenSpecifiedIdIsNull() {
         Throwable caughtException = Assertions.catchThrowable(() -> inMemoryOrderRepository.cancel(null));
 
         assertThat(caughtException)
@@ -69,10 +69,9 @@ public class InMemoryOrderRepositoryTest {
 
     @Test
     public void cancelThrowsNotFoundExceptionWhenNoOrderWithSpecifiedIdExists() {
-        Throwable caughtException = Assertions.catchThrowable(() -> {
-            UUID orderId = UUID.fromString("02904e39-9dc0-47a4-b7e3-1793fbc64afc");
-            inMemoryOrderRepository.cancel(orderId);
-        });
+        UUID orderId = UUID.fromString("02904e39-9dc0-47a4-b7e3-1793fbc64afc");
+
+        Throwable caughtException = Assertions.catchThrowable(() -> inMemoryOrderRepository.cancel(orderId));
 
         assertThat(caughtException).isExactlyInstanceOf(OrderNotFoundException.class)
                 .hasMessage("Order with id '02904e39-9dc0-47a4-b7e3-1793fbc64afc' not found");
@@ -87,5 +86,31 @@ public class InMemoryOrderRepositoryTest {
 
         List<Order> allOrders = inMemoryOrderRepository.findAll();
         assertThat(allOrders).isEmpty();
+    }
+
+    @Test
+    public void findByTypeThrowsExceptionWhenSpecifiedTypeIsNull() {
+        Throwable caughtException = Assertions.catchThrowable(() -> inMemoryOrderRepository.findByType(null));
+
+        assertThat(caughtException)
+                .isExactlyInstanceOf(NullPointerException.class)
+                .hasMessage("orderType cannot be null");
+    }
+
+    @Test
+    public void findByTypeReturnsEmptyWhenThereAreNoSavedOrders() {
+        List<Order> actualOrders = inMemoryOrderRepository.findByType(Order.Type.BUY);
+
+        assertThat(actualOrders).isEmpty();
+    }
+
+    @Test
+    public void findByTypeReturnsEmptyWhenThereIsNoOrderOfTheSpecifiedType() {
+        NewOrder newOrder = new NewOrder("user-1", new BigDecimal("3.5"), 305, Order.Type.SELL);
+        inMemoryOrderRepository.save(newOrder);
+
+        List<Order> actualOrders = inMemoryOrderRepository.findByType(Order.Type.BUY);
+
+        assertThat(actualOrders).isEmpty();
     }
 }
