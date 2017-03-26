@@ -14,28 +14,27 @@ import java.util.UUID;
  * Created by raimon on 26/03/2017.
  */
 public final class LiveOrderBoardApplication {
-    private final OrderRepository orderRepository;
     private final LiveOrderBoardService liveOrderBoardService;
 
-    public LiveOrderBoardApplication(OrderRepository orderRepository) {
-        this.orderRepository = orderRepository;
-        this.liveOrderBoardService = new LiveOrderBoardService(orderRepository);
+    public LiveOrderBoardApplication(LiveOrderBoardService liveOrderBoardService) {
+        this.liveOrderBoardService = liveOrderBoardService;
     }
 
     public static LiveOrderBoardApplication start() {
-        return new LiveOrderBoardApplication(OrderRepositoryFactory.newInMemoryInstance());
+        OrderRepository orderRepository = OrderRepositoryFactory.newInMemoryInstance();
+        return new LiveOrderBoardApplication(new LiveOrderBoardService(orderRepository));
     }
 
     public List<Order> listAll() {
-        return orderRepository.findAll();
+        return liveOrderBoardService.listAll();
     }
 
     public Order register(NewOrder newOrder) {
-        return orderRepository.save(newOrder);
+        return liveOrderBoardService.save(newOrder);
     }
 
     public void cancel(UUID registeredOrderId) {
-        orderRepository.cancel(registeredOrderId);
+        liveOrderBoardService.cancel(registeredOrderId);
     }
 
     public List<SummaryOrder> listSummary(Order.Type orderType) {

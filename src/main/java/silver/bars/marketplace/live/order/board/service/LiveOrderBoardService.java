@@ -25,6 +25,7 @@ public final class LiveOrderBoardService {
 
     public LiveOrderBoardService(OrderRepository orderRepository) {
         this.orderRepository = orderRepository;
+
         summaryOrderComparators = new HashMap<>();
         summaryOrderComparators.put(Order.Type.BUY, (orderOne, orderTwo) -> orderTwo.getPriceAmount() - orderOne.getPriceAmount());
         summaryOrderComparators.put(Order.Type.SELL, (orderOne, orderTwo) -> orderOne.getPriceAmount() - orderTwo.getPriceAmount());
