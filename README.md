@@ -4,7 +4,7 @@ Added validation so that price must be greater than 0.
 
 Added validation so that quantity must be greater than 0.
 
-Even though quantity always appears in kilos, I've used the ValueObject pattern 
+Even though quantity always appears in Kg, I've used the ValueObject pattern 
 and created the WeightValue so it can be extended to other weight units.
 
 Even though price per kg always appears in GBP, I've used the ValueObject pattern
